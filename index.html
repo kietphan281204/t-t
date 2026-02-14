@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chúc Mừng Năm Mới</title>
+	<!-- Google Fonts cho nét chữ thư pháp đẹp -->
+	<link
+		href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&display=swap"
+		rel="stylesheet">
+	<style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			font-family: 'Playfair Display', serif;
+			background-color: #000;
+		}
+
+		/* Trang bìa màu đỏ */
+		#cover-page {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: linear-gradient(135deg, #d32f2f, #b71c1c);
+			/* Màu đỏ đậm chất Tết */
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			z-index: 100;
+			transition: opacity 1.5s ease-in-out;
+			color: #fff;
+			text-align: center;
+		}
+
+		#cover-page h1 {
+			font-family: 'Dancing Script', cursive;
+			font-size: 5rem;
+			margin-bottom: 30px;
+			color: #FFD700;
+			/* Màu vàng kim */
+			text-transform: normal;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+			animation: pulse 2s infinite;
+		}
+
+		/* Style cho form đăng nhập */
+		#login-container {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 15px;
+			animation: fadeIn 2s ease-out;
+		}
+
+		#password {
+			padding: 12px 20px;
+			font-size: 1.2rem;
+			border: 2px solid #FFD700;
+			border-radius: 25px;
+			background: rgba(255, 255, 255, 0.9);
+			color: #b71c1c;
+			outline: none;
+			width: 250px;
+			text-align: center;
+			font-family: 'Playfair Display', serif;
+			transition: all 0.3s;
+		}
+
+		#password:focus {
+			box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+			transform: scale(1.05);
+		}
+
+		button {
+			padding: 10px 30px;
+			font-size: 1.2rem;
+			background: #FFD700;
+			color: #d32f2f;
+			border: none;
+			border-radius: 25px;
+			cursor: pointer;
+			font-weight: bold;
+			font-family: 'Playfair Display', serif;
+			transition: all 0.3s;
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+		}
+
+		button:hover {
+			background: #fff;
+			transform: scale(1.1);
+			box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+		}
+
+		#error-message {
+			color: #fff;
+			background: rgba(0, 0, 0, 0.6);
+			padding: 8px 12px;
+			border-radius: 8px;
+			margin-top: 10px;
+			font-style: italic;
+			display: none;
+			max-width: 90%;
+			width: auto;
+			box-sizing: border-box;
+			text-align: center;
+			white-space: normal;
+			overflow-wrap: break-word;
+			word-break: break-word;
+			z-index: 120;
+		}
+
+		/* Hiệu ứng nhấp nháy chữ */
+		@keyframes pulse {
+			0% {
+				transform: scale(1);
+			}
+
+			50% {
+				transform: scale(1.05);
+			}
+
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		@keyframes fadeIn {
+			0% {
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			100% {
+				font-size: 2rem;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes shake {
+
+			0%,
+			100% {
+				transform: translateX(0);
+			}
+
+			20% {
+				transform: translateX(-10px);
+			}
+
+			40% {
+				transform: translateX(10px);
+			}
+
+			60% {
+				transform: translateX(-10px);
+			}
+
+			80% {
+				transform: translateX(10px);
+			}
+		}
+
+		/* Video container */
+		#video-container {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+			/* Luôn hiển thị ở dưới để sẵn sàng */
+		}
+
+		#myVideo {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.hidden {
+			opacity: 0 !important;
+			pointer-events: none;
+		}
+
+		/* Con ngựa chạy với banner */
+		#horse-banner {
+			position: fixed;
+			top: 10%;
+			left: -100%;
+			z-index: 50;
+			display: none;
+			/* Ẩn ban đầu, hiện khi video phát */
+			animation: horseRun 12s linear infinite;
+			filter: drop-shadow(3px 3px 5px rgba(0, 0, 0, 0.5));
+		}
+
+		#horse-banner.active {
+			display: flex;
+			align-items: center;
+			flex-direction: row-reverse;
+			/* Đảo thứ tự để chữ ở trước, ngựa ở sau */
+		}
+
+		/* Hình con ngựa */
+		.horse-image {
+			width: 200px;
+			height: auto;
+			transform: scaleX(-1);
+			/* Chỉ lật con ngựa */
+			object-fit: contain;
+			/* Bỏ nền trắng nếu có */
+		}
+
+		/* Banner chữ kéo sau ngựa */
+		.banner-text {
+			background: linear-gradient(90deg,
+					#FF0000 0%,
+					#FF7F00 14%,
+					#FFFF00 28%,
+					#00FF00 42%,
+					#0000FF 57%,
+					#4B0082 71%,
+					#9400D3 85%,
+					#FF0000 100%);
+			background-size: 200% auto;
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			background-clip: text;
+			font-family: 'Dancing Script', cursive;
+			font-size: 2.5rem;
+			padding: 20px 40px;
+			white-space: nowrap;
+			margin-right: 20px;
+			filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+			animation: bannerWave 2s ease-in-out infinite, rainbowShift 3s linear infinite;
+		}
+
+		/* Animation màu cầu vồng chuyển động */
+		@keyframes rainbowShift {
+			0% {
+				background-position: 0% center;
+			}
+
+			100% {
+				background-position: 200% center;
+			}
+		}
+
+		/* Animation ngựa chạy từ phải sang trái liên tục */
+		@keyframes horseRun {
+			0% {
+				left: 100%;
+			}
+
+			100% {
+				left: -100%;
+			}
+		}
+
+		/* Banner vẫy nhẹ */
+		@keyframes bannerWave {
+
+			0%,
+			100% {
+				transform: translateY(0px) rotate(0deg);
+			}
+
+			50% {
+				transform: translateY(-5px) rotate(1deg);
+			}
+		}
+
+		/* Responsive cho màn hình nhỏ */
+		@media (max-width: 768px) {
+			.horse-image {
+				width: 100px;
+			}
+
+			.banner-text {
+				font-size: 1.5rem;
+				padding: 15px 25px;
+				margin-left: 10px;
+			}
+
+			#horse-banner {
+				top: 5%;
+			}
+
+			#cover-page h1 {
+				font-size: 3rem;
+			}
+
+			#new-year-message {
+				font-size: 1.5rem !important;
+				padding: 20px 30px !important;
+				width: 90% !important;
+			}
+		}
+
+		/* Tin nhắn chúc mừng năm mới hiện sau 1s */
+		#new-year-message {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background: rgba(255, 255, 255, 0.1);
+			/* Nền trong suốt */
+			backdrop-filter: blur(2px);
+			/* Hiệu ứng kính mờ */
+			padding: 30px 50px;
+			border-radius: 20px;
+			color: #FFD700;
+			font-family: 'Dancing Script', cursive;
+			font-size: 1.8rem;
+			text-shadow: 0 0 10px rgba(255, 215, 0, 0.7), 2px 2px 4px rgba(0, 0, 0, 0.5);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			z-index: 200;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 1.5s ease-in-out;
+			text-align: center;
+			white-space: normal;
+			max-width: 90%;
+			width: 800px;
+		}
+
+		#new-year-message.show {
+			opacity: 1;
+			animation: popUp 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+		}
+
+		@keyframes popUp {
+			0% {
+				transform: translate(-50%, -50%) scale(0.5);
+				opacity: 0;
+			}
+
+			100% {
+				transform: translate(-50%, -50%) scale(1);
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<!-- Trang bìa -->
+	<div id="cover-page">
+		<h1>Mk là tên của ní á </h1>
+
+		<div id="login-container">
+			<input type="text" id="password" placeholder="mk là tên của ní á..." />
+			<button id="submit-btn">Mở Quà</button>
+			<div id="error-message">Mật khẩu 0 sai tr đã nói tên ní ồi mà </div>
+		</div>
+	</div>
+
+	<!-- Video Background -->
+	<div id="video-container">
+		<!-- Video tự phát, loop -->
+		<video id="myVideo" playsinline loop muted>
+			<source src="ph2.mp4" type="video/mp4">
+			Trình duyệt của bạn không hỗ trợ video.
+		</video>
+	</div>
+
+	<!-- Con ngựa kéo banner -->
+	<div id="horse-banner">
+
+
+		<!-- Banner chữ -->
+		<div class="banner-text">
+			Chúc Mừng Năm Mới 2026 Nhi he
+		</div>
+	</div>
+
+	<!-- Tin nhắn chúc mừng hiện sau 1 giây -->
+	<div id="new-year-message"></div>
+
+	<!-- Nhạc nền -->
+	<audio id="bgMusic" loop>
+		<source src="nhactet.mp3" type="audio/mpeg">
+	</audio>
+
+	<script>
+		const coverPage = document.getElementById('cover-page');
+		const myVideo = document.getElementById('myVideo');
+		const bgMusic = document.getElementById('bgMusic');
+		const passwordInput = document.getElementById('password');
+		const submitBtn = document.getElementById('submit-btn');
+		const errorMessage = document.getElementById('error-message');
+		const horseBanner = document.getElementById('horse-banner');
+
+		// Mật khẩu quy định (chấp nhận 3 dạng: "nhi", "Nhi", "NHI")
+		const VALID_PASSWORDS = ["nhi", "Nhi", "NHI"];
+
+		function checkPassword() {
+			const input = passwordInput.value;
+			if (VALID_PASSWORDS.includes(input)) {
+				// Mật khẩu đúng
+				startCelebration();
+			} else {
+				// Mật khẩu sai
+				errorMessage.style.display = "block";
+				errorMessage.style.animation = "shake 0.5s ease-in-out";
+				setTimeout(() => {
+					errorMessage.style.animation = "";
+				}, 500);
+			}
+		}
+
+
+		const fullMessage =
+			`Năm mới chúc nhi gia đình nhi luôn là bến đỗ bình
+		  yên nơi mọi người về là thấy ấm lòng,mệt mỏi tan biến
+Mọi điều ước đều thành, mọi khó khăn đều quavà mọi ngày đều tốt lành!!!
+Đây cũng là lần đầu chúc tết nhi nhỉ tôi với nhi cũng xem như người
+ xa lạ cũng ko ấy he tôi cũng ko biết chúc sao cho hợp lý nữa thôi chúc nhi 5 từ:
+  TỐT, HAY, HOÀN HẢO, ĐẸP, MAY MẮN điều đến với nhi trong 100 năm tới luôn.
+Nếu thời gian tới cần tôi HỖ TRỢ gì thì cứ nói tôi nhé, biết là nhi ngại sợ phiền chứ gì
+không sao kkk cứ như cớ duyên gặp người tốt như tôi là được hehe.`;
+
+		function typeWriterEffect() {
+			const messageContainer = document.getElementById('new-year-message');
+			messageContainer.innerHTML = ''; // Đảm bảo rỗng
+
+			// Xử lý xuống dòng: Thay \n bằng dấu hiệu đặc biệt rồi split
+			// Thêm khoảng trắng quanh \n để split tách ra được
+			const processedText = fullMessage.replace(/\n/g, " <br> ");
+			const words = processedText.split(' ');
+
+			let index = 0;
+			const speed = 150; // Tốc độ chạy chữ (ms)
+
+			function type() {
+				if (index < words.length) {
+					let word = words[index];
+					if (word === "<br>") {
+						messageContainer.innerHTML += "<br>";
+					} else if (word !== "") { // Bỏ qua chuỗi rỗng do split
+						messageContainer.innerHTML += word + " ";
+					}
+					index++;
+					setTimeout(type, speed);
+				}
+			}
+			type();
+		}
+
+		function startCelebration() {
+			// 1. Phát nhạc
+			bgMusic.play().catch(console.error);
+
+			// 2. Phát video (ở layer dưới)
+			myVideo.play().catch(console.error);
+			myVideo.muted = false; // Bật tiếng video nếu cần
+
+			// 3. Ẩn trang bìa từ từ để lộ video
+			coverPage.classList.add('hidden');
+
+			// 4. Hiện con ngựa chạy kéo banner
+			horseBanner.classList.add('active');
+
+			// 5. Hiện tin nhắn sau 1 giây
+			setTimeout(() => {
+				const message = document.getElementById('new-year-message');
+				message.classList.add('show');
+				typeWriterEffect();
+			}, 1000);
+
+			// Xóa trang bìa khỏi DOM sau khi animation xong
+			setTimeout(() => {
+				coverPage.style.display = 'none';
+			}, 1500);
+		}
+
+		// Sự kiện click nút
+		submitBtn.addEventListener('click', checkPassword);
+
+		// Sự kiện nhấn Enter
+		passwordInput.addEventListener('keypress', (e) => {
+			if (e.key === 'Enter') {
+				checkPassword();
+			}
+		});
+
+		// Xóa thông báo lỗi khi nhập lại
+		passwordInput.addEventListener('input', () => {
+			errorMessage.style.display = 'none';
+		});
+	</script>
+</body>
+
+</html>
